@@ -8,13 +8,18 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-/**
- *
- * @author Reis
- */
 public class Arvore {
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
     private No raiz;
-    private Scanner in = new Scanner(System.in);
 
     Arvore() {
         raiz = null;
@@ -109,61 +114,11 @@ public class Arvore {
         if (s.equals("n"))
             return null;
         int valor = Integer.parseInt(s);
+        System.out.println(valor + " esq:");
         No esquerdo = escritaArvore(in);
+        System.out.println(valor + " dir:");
         No direito = escritaArvore(in);
         return new No(valor, esquerdo, direito);
-    }
-
-    public static Arvore leituraBreadth(Scanner in) {
-        Arvore arvore = new Arvore();
-        arvore.setRaiz(escritaArvoreBreadth(in));
-        return arvore;
-    }
-
-    private static No escritaArvoreBreadth(Scanner in) {
-        Queue<No> fila = new LinkedList<>();
-        System.out.println("valor da raiz: ");
-        String s = in.next();
-        if (s.equals("n")) {
-            return null;
-        }
-        int valor = Integer.parseInt(s);
-
-        No raiz = new No(valor, null, null);
-
-        fila.add(raiz);
-
-        while (!fila.isEmpty()) {
-            No atual = fila.remove();
-            System.out.println("no " + atual.getValue() + " esq: ");
-            String strEsq = in.next();
-            int esqValue;
-            if (!strEsq.equals("n")) {
-                esqValue = Integer.parseInt(strEsq);
-                atual.setEsq(new No(esqValue, null, null));
-            } else {
-                atual.setEsq(null);
-            }
-            System.out.println("no " + atual.getValue() + " dir: ");
-            String strDir = in.next();
-            int dirValue;
-            if (!strDir.equals("n")) {
-                dirValue = Integer.parseInt(strDir);
-                atual.setDir(new No(dirValue, null, null));
-            } else {
-                atual.setDir(null);
-            }
-
-            if (atual.getEsq() != null) {
-                fila.add(atual.getEsq());
-            }
-
-            if (atual.getDir() != null) {
-                fila.add(atual.getDir());
-            }
-        }
-
-        return raiz;
     }
 
     public void printBreathFirst() {
@@ -180,6 +135,7 @@ public class Arvore {
         while (!queue.isEmpty()) {
             No current = queue.remove();
             System.out.println(current.getValue() + " " + getBalance(current));
+            // System.out.println(current.getValue());
 
             if (current.getEsq() != null) {
                 queue.add(current.getEsq());
@@ -251,119 +207,90 @@ public class Arvore {
         return findUnbalancedNode(node.getDir());
     }
 
-    public void addNode() {
-        System.out.println("Inserir no nó: ");
-        No parent = findNode(this.in.nextInt());
-        if (parent == null) {
-            System.out.println("Nó não encontrado");
-            return;
-        }
-        System.out.println("Inserir valor: ");
-        int value = this.in.nextInt();
-        if (this.contem(value)) {
-            System.out.println("Valor já existe");
-            System.out.println();
-            return;
-        }
-        if (parent.getEsq() == null) {
-            parent.setEsq(new No(value, null, null));
-        } else if (parent.getDir() == null) {
-            parent.setDir(new No(value, null, null));
+    public void addNode(int value) {
+        Scanner in = new Scanner(System.in);
+        if (value >= 0) {
+            addNode(raiz, value);
         } else {
-            System.out.println("Nó já está cheio");
-            System.out.println();
+            System.out.println("Digite o valor do novo nó: ");
+            int invalue = in.nextInt();
+            addNode(raiz, invalue);
         }
-
-        if (this.isBalanced()) {
-            System.out.println("Arvore balanceada");
-        } else {
-            System.out.println("Arvore nao balanceada");
-        }
-
-        this.printBreathFirst();
-
-        if (this.isBalanced()) {
-            System.out.println("Arvore balanceada");
-        } else {
-            System.out.println("Arvore nao balanceada");
-            No unbalancedNode = this.findUnbalancedNode();
-
-            if (unbalancedNode == null) {
-                System.out.println("Arvore balanceada");
-            } else {
-                System.out.println("Nó desbalanceado: " + unbalancedNode.getValue());
-                System.out.println("Altura esquerda: " + this.altura(unbalancedNode.getEsq()));
-                System.out.println("Altura direita: " + this.altura(unbalancedNode.getDir()));
-                System.out.println("Balanceamento: " + this.getBalance(unbalancedNode));
-            }
-
-            int rightBalance;
-            if (unbalancedNode.getDir() != null) {
-                rightBalance = this.getBalance(unbalancedNode.getDir());
-            } else {
-                rightBalance = 0;
-            }
-
-            int leftBalance;
-            if (unbalancedNode.getEsq() != null) {
-                leftBalance = this.getBalance(unbalancedNode.getEsq());
-            } else {
-                leftBalance = 0;
-            }
-
-            if (Math.abs(rightBalance) > Math.abs(leftBalance)) {
-                this.rotateLeft(unbalancedNode);
-            } else {
-                this.rotateRight(unbalancedNode);
-            }
-
-            this.printBreathFirst();
-
-            if (this.isBalanced()) {
-                System.out.println("Arvore balanceada");
-            } else {
-                System.out.println("Arvore nao balanceada");
-            }
-
-        }
+        in.close();
     }
 
-    public void rotateLeft(No node) {
-        No right = node.getDir();
-        No parent = this.findParent(node.getValue());
-
-        if (parent == null) {
-            this.raiz = right;
-            node.setDir(null);
-            right.setEsq(node);
-        } else {
-            if (parent.getEsq() == node) {
-                parent.setEsq(right);
-            } else {
-                parent.setDir(right);
-            }
-            node.setDir(null);
-            right.setEsq(node);
+    private void addNode(No node, int value) {
+        if (node == null) {
+            raiz = new No(value, null, null);
+            return;
         }
+        if (value < node.getValue()) {
+            if (node.getEsq() == null) {
+                node.setEsq(new No(value, null, null));
+                printBreathFirst();
+                if (!isBalanced()) {
+                    if (node.getEsq().getValue() < node.getValue()) {
+                        System.out.println("right rotation");
+                        rotateRight(node, node.getEsq());
+                    } else {
+                        System.out.println("left-right rotation");
+                        rotateLeft(node, node.getEsq());
+                        rotateRight(node, node.getEsq());
+                    }
+                }
+            } else {
+                addNode(node.getEsq(), value);
+            }
+        } else if (value > node.getValue()) {
+            if (node.getDir() == null) {
+                node.setDir(new No(value, null, null));
+                printBreathFirst();
+                if (!isBalanced()) {
+                    if (node.getDir().getValue() > node.getValue()) {
+                        System.out.println("left Rotation");
+                        rotateLeft(node, node.getDir());
+                    } else {
+                        System.out.println("right-left rotation");
+                        rotateRight(node, node.getDir());
+                        rotateLeft(node, node.getDir());
+                    }
+                }
+            } else {
+                addNode(node.getDir(), value);
+            }
+        } else {
+            System.out.println(ANSI_YELLOW + "Valor já existe na árvore" + ANSI_RESET);
+        }
+
     }
 
-    public void rotateRight(No node) {
-        No left = node.getEsq();
-        No parent = this.findParent(node.getValue());
+    private No rotateLeft(No node, No newNode) {
+        No child = new No(node.getValue(), newNode.getEsq(), node.getDir());
+        No parent = findParent(node.getValue());
+        parent.setDir(null);
+        No parentTemp = new No(parent.getValue(), parent.getEsq(), parent.getDir());
 
-        if (parent == null) {
-            this.raiz = left;
-            node.setEsq(null);
-            left.setDir(node);
-        } else {
-            if (parent.getDir() == node) {
-                parent.setDir(left);
-            } else {
-                parent.setEsq(left);
-            }
-            node.setEsq(null);
-            left.setDir(node);
-        }
+        parent.setValue(child.getValue());
+        parent.setDir(newNode);
+        parent.setEsq(parentTemp);
+
+        return node;
+    }
+
+    private No rotateRight(No node, No newNode) {
+
+        No child = new No(node.getValue(), newNode.getEsq(), node.getDir());
+        No parent = findParent(node.getValue());
+        parent.setEsq(null);
+        No parentTemp = new No(parent.getValue(), parent.getEsq(), parent.getDir());
+
+        parent.setValue(child.getValue());
+        parent.setEsq(newNode);
+        System.out.println(child.getValue());
+        parent.setDir(parentTemp);
+
+        return node;
+
     }
 
     public No findParent(int value) {

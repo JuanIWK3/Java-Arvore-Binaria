@@ -11,14 +11,14 @@ package arvorebinaria;
 public class No {
     private int value; // Valor guardado no n´o
     private No esq; // Filho esquerdo
-    private No dir;  // Filho direito
+    private No dir; // Filho direito
 
-// Construtor
-No(int v, No e, No d) {
-    value = v; 
-    esq = e; 
-    dir = d;
-}
+    // Construtor
+    No(int v, No e, No d) {
+        value = v;
+        esq = e;
+        dir = d;
+    }
 
     /**
      * @return the value
