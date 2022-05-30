@@ -8,7 +8,7 @@ public class ArvoreBinaria {
         Arvore arvore = Arvore.leitura(in);
         arvore.printBreathFirst();
         // arvore.addNode();
-        arvore.addNode(9);
+        arvore.addNode(in);
         arvore.printBreathFirst();
     }
 }

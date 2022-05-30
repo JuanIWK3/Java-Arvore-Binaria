@@ -105,6 +105,7 @@ public class Arvore {
 
     public static Arvore leitura(Scanner in) {
         Arvore arvore = new Arvore();
+        System.out.println("Digite o valor da raiz:");
         arvore.setRaiz(escritaArvore(in));
         return arvore;
     }
@@ -124,6 +125,8 @@ public class Arvore {
     public void printBreathFirst() {
         System.out.println();
         System.out.println("BreathFirst:");
+        System.out.println("Valor | Balanço");
+        System.out.println("---------------");
         printBreadthFirst(raiz);
         System.out.println();
     }
@@ -207,16 +210,11 @@ public class Arvore {
         return findUnbalancedNode(node.getDir());
     }
 
-    public void addNode(int value) {
-        Scanner in = new Scanner(System.in);
-        if (value >= 0) {
-            addNode(raiz, value);
-        } else {
-            System.out.println("Digite o valor do novo nó: ");
-            int invalue = in.nextInt();
-            addNode(raiz, invalue);
-        }
-        in.close();
+    public void addNode(Scanner in) {
+        System.out.println("Digite o valor do novo nó: ");
+        int invalue = in.nextInt();
+        System.out.println();
+        addNode(raiz, invalue);
     }
 
     private void addNode(No node, int value) {
@@ -227,8 +225,10 @@ public class Arvore {
         if (value < node.getValue()) {
             if (node.getEsq() == null) {
                 node.setEsq(new No(value, null, null));
+                System.out.println("Nó inserido com sucesso!");
                 printBreathFirst();
                 if (!isBalanced()) {
+                    System.out.print("Método de balanceamento: ");
                     if (node.getEsq().getValue() < node.getValue()) {
                         System.out.println("right rotation");
                         rotateRight(node, node.getEsq());
@@ -244,8 +244,10 @@ public class Arvore {
         } else if (value > node.getValue()) {
             if (node.getDir() == null) {
                 node.setDir(new No(value, null, null));
+                System.out.println("Nó inserido com sucesso!");
                 printBreathFirst();
                 if (!isBalanced()) {
+                    System.out.print("Método de balanceamento: ");
                     if (node.getDir().getValue() > node.getValue()) {
                         System.out.println("left Rotation");
                         rotateLeft(node, node.getDir());
